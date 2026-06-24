@@ -771,11 +771,13 @@ myCode;
 
 /* REFERRAL LINK */
 
-document.getElementById("referralLink").innerText =
+const referralLink =
 window.location.origin +
-"/signup.html?ref=" +
+"/jbpool/signup.html?ref=" +
 myCode;
 
+document.getElementById("referralLink").innerText =
+referralLink;
 /* TEAM MEMBERS */
 
 const q = query(
