@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Deposit</title>
+  <style>
+    *{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:Arial,sans-serif;
+}
+
+body{
+  background:#0a0a0a;
+  color:white;
+  min-height:100vh;
+  padding:20px;
+}
+
+.deposit-container{
+  max-width:500px;
+  margin:30px auto;
+  background:#111;
+  border:2px solid #7b2cff;
+  border-radius:20px;
+  padding:25px;
+  box-shadow:0 0 20px rgba(123,44,255,0.4);
+}
+
+.deposit-container h2{
+  text-align:center;
+  color:#b266ff;
+  margin-bottom:25px;
+  text-shadow:0 0 10px #b266ff;
+}
+
+label{
+  display:block;
+  margin-top:15px;
+  margin-bottom:8px;
+  color:#ddd;
+}
+
+input,
+select{
+  width:100%;
+  padding:15px;
+  background:#1a1a1a;
+  border:2px solid #7b2cff;
+  border-radius:12px;
+  color:white;
+  font-size:15px;
+  outline:none;
+}
+
+input:focus,
+select:focus{
+  box-shadow:0 0 15px #7b2cff;
+}
+
+#copyBtn{
+  width:100%;
+  margin-top:10px;
+  padding:12px;
+  border:none;
+  border-radius:12px;
+  background:#222;
+  color:#b266ff;
+  font-weight:bold;
+  cursor:pointer;
+}
+
+#copyBtn:hover{
+  background:#2f2f2f;
+}
+
+#depositBtn{
+  width:100%;
+  margin-top:25px;
+  padding:15px;
+  border:none;
+  border-radius:12px;
+  background:linear-gradient(45deg,#7b2cff,#b266ff);
+  color:white;
+  font-size:18px;
+  font-weight:bold;
+  cursor:pointer;
+}
+
+#depositBtn:hover{
+  transform:scale(1.02);
+}
+
+#walletAddress{
+  color:#00ff99;
+  font-weight:bold;
+}
+.notice{
+  background:rgba(123,44,255,0.15);
+  border:2px solid #7b2cff;
+  color:#ffffff;
+  padding:15px;
+  border-radius:12px;
+  margin-bottom:20px;
+  line-height:1.6;
+  text-align:center;
+  box-shadow:0 0 10px rgba(123,44,255,0.4);
+}
+
+.notice b{
+  color:#ffcc00;
+}
+.back-btn{
+  background:#7b2cff;
+  color:white;
+  border:none;
+  padding:12px 20px;
+  border-radius:10px;
+  font-size:16px;
+  font-weight:bold;
+  cursor:pointer;
+  margin-bottom:15px;
+}
+
+.back-btn:hover{
+  box-shadow:0 0 15px #b266ff;
+}
+.bottom-nav{
+  position:fixed;
+  bottom:0;
+  left:0;
+  width:100%;
+  background:#111;
+  border-top:2px solid #7b2cff;
+  display:flex;
+  justify-content:space-around;
+  padding:12px 0;
+  z-index:1000;
+}
+
+.bottom-nav a{
+  color:white;
+  text-decoration:none;
+  text-align:center;
+  font-size:14px;
+}
+
+.bottom-nav a:hover{
+  color:#b266ff;
+}
+
+  </style>
+</head>
+<body>
+  <button onclick="window.location.href='dashboard.html'" class="back-btn">
+⬅ Back
+</button>
+<div class="deposit-container">
+
+<h2>💰 Deposit Funds</h2>
+<div class="notice">
+⚠️ SYSTEM NOTICE: Minimum Deposit is <b>30 USDT</b>. Deposits below 30 USDT will not be credited to your account. Please verify the wallet network before sending funds.
+</div>
+
+<label>Payment Method</label>
+<select id="method">
+  <option value="BEP20">USDT BEP20</option>
+  <option value="TRC20">USDT TRC20</option>
+</select>
+
+<label>Wallet Address</label>
+<input type="text" id="walletAddress" readonly>
+
+<button id="copyBtn">📋 Copy Address</button>
+
+<label>Amount (USDT)</label>
+<input type="number" id="amount" placeholder="Enter Amount">
+
+<label>Transaction ID (TXID)</label>
+<input type="text" id="txid" placeholder="Enter TXID">
+
+<button id="depositBtn">
+Submit Deposit
+</button>
+
+</div>
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
+
+import { getAuth } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-auth.js";
+
+import {
+  getFirestore,
+  collection,
+  addDoc
+} from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDqzr44aj7ikUquk4Fp7WeYxwIVFX0-NkI",
+  authDomain: "ib-pool.firebaseapp.com",
+  projectId: "ib-pool",
+  storageBucket: "ib-pool.firebasestorage.app",
+  messagingSenderId: "930921732786",
+  appId: "1:930921732786:web:2eab7b97f307c25ac507ab"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+const method = document.getElementById("method");
+const walletAddress = document.getElementById("walletAddress");
+
+function updateWallet(){
+
+  if(method.value === "BEP20"){
+    walletAddress.value =
+    "0xe3ee9c3a14dbc05cb1960ce4a74083a0d4b80bb3";
+  }else{
+    walletAddress.value =
+    "TB5fmkpeGr3sS8piJPMwe1QBnNeCwAeQE7";
+  }
+
+}
+
+method.addEventListener("change", updateWallet);
+updateWallet();
+
+document.getElementById("copyBtn")
+.addEventListener("click", ()=>{
+
+  navigator.clipboard.writeText(
+    walletAddress.value
+  );
+
+  alert("Wallet Address Copied");
+
+});
+
+document.getElementById("depositBtn")
+.addEventListener("click", async ()=>{
+
+  const amount =
+  Number(document.getElementById("amount").value);
+
+  const txid =
+  document.getElementById("txid").value.trim();
+
+  const selectedMethod =
+  document.getElementById("method").value;
+
+  if(amount < 30){
+    alert("Minimum Deposit is 30 USDT");
+    return;
+  }
+
+  if(!txid){
+    alert("Please Enter Transaction ID");
+    return;
+  }
+
+  try{
+
+    await addDoc(
+      collection(db,"deposits"),
+      {
+        uid: auth.currentUser ?
+             auth.currentUser.uid : "",
+        amount: amount,
+        method: selectedMethod,
+        txid: txid,
+        wallet: walletAddress.value,
+        status: "Pending",
+        createdAt: new Date().toISOString()
+      }
+    );
+
+    alert("✅ Deposit Request Submitted Successfully");
+
+    document.getElementById("amount").value="";
+    document.getElementById("txid").value="";
+
+  }catch(error){
+
+    alert(error.message);
+    console.error(error);
+
+  }
+
+});
+
+</script>
+<div class="bottom-nav">
+
+  <a href="dashboard.html">
+    🏠<br>Home
+  </a>
+
+  <a href="deposit.html">
+    💰<br>Deposit
+  </a>
+
+  <a href="withdraw.html">
+    💸<br>Withdraw
+  </a>
+  <a href="reward.html">
+🎁<br> Rewards
+</a>
+
+  <a href="profile.html">
+    👤<br>Mine
+  </a>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Dash board</title>
+  <style>
+    /* BODY */
+
+body{
+background:#0a0a0a;
+color:#fff;
+font-family:Arial,sans-serif;
+margin:0;
+padding:15px;
+padding-bottom:90px;
+}
+
+/* HEADER */
+
+.header{
+display:flex;
+align-items:center;
+gap:15px;
+margin-bottom:20px;
+}
+
+.header h1{
+margin:0;
+color:#b266ff;
+font-size:32px;
+font-weight:bold;
+}
+
+.menu-btn{
+width:50px;
+height:50px;
+border:none;
+border-radius:15px;
+background:#7b2cff;
+color:#fff;
+font-size:24px;
+cursor:pointer;
+}
+
+/* SIDE MENU */
+
+.side-menu{
+display:none;
+position:fixed;
+top:0;
+left:0;
+width:260px;
+height:100vh;
+background:#111827;
+padding:20px;
+z-index:9999;
+box-shadow:0 0 25px rgba(123,44,255,.6);
+overflow-y:auto;
+}
+
+.menu-top{
+display:flex;
+justify-content:flex-end;
+align-items:center;
+margin-bottom:20px;
+}
+
+.close-btn{
+background:none;
+border:none;
+color:white;
+font-size:24px;
+cursor:pointer;
+padding:5px;
+transition:.3s;
+}
+
+.close-btn:hover{
+color:#ef4444;
+transform:rotate(90deg);
+}
+
+.side-menu a{
+display:block;
+text-decoration:none;
+color:white;
+background:#1f2937;
+padding:15px;
+border-radius:12px;
+margin-bottom:12px;
+font-size:15px;
+transition:.3s;
+border:1px solid #374151;
+}
+
+.side-menu a:hover{
+background:#7c3aed;
+transform:translateX(5px);
+}
+
+.header{
+display:flex;
+align-items:center;
+gap:20px;
+padding:20px;
+background:#0f172a;
+border-radius:15px;
+margin:15px;
+box-shadow:0 0 20px rgba(123,44,255,.4);
+}
+
+.header h1{
+font-size:42px;
+font-weight:bold;
+letter-spacing:3px;
+color:#a855f7;
+text-shadow:
+0 0 10px #a855f7,
+0 0 20px #a855f7,
+0 0 30px #7c3aed;
+}
+-webkit-background-clip:text;
+-webkit-text-fill-color:transparent;
+text-shadow:0 0 15px rgba(168,85,247,.5);
+}
+
+.menu-btn{
+background:none;
+border:none;
+color:white;
+font-size:32px;
+cursor:pointer;
+}
+
+/* WELCOME */
+
+.welcome-card{
+background:#111;
+border:2px solid #7b2cff;
+border-radius:20px;
+padding:20px;
+margin-bottom:20px;
+box-shadow:0 0 15px rgba(123,44,255,.3);
+}
+
+.welcome-card h2{
+margin:0;
+font-size:32px;
+}
+
+#username{
+color:#b266ff;
+}
+
+/* MAIN CARD */
+
+.card{
+background:#111;
+border:2px solid #7b2cff;
+border-radius:20px;
+padding:20px;
+margin-bottom:20px;
+box-shadow:0 0 15px rgba(123,44,255,.3);
+}
+
+.card h3{
+margin-top:0;
+color:#b266ff;
+}
+
+/* BALANCE */
+
+.balance{
+text-align:center;
+font-size:48px;
+font-weight:bold;
+margin:20px 0;
+}
+
+/* REFERRAL BOX */
+
+.referral-box{
+margin-top:20px;
+background:#0f0f0f;
+border:2px solid #7b2cff;
+border-radius:20px;
+padding:20px;
+text-align:center;
+}
+
+.referral-box h3{
+color:#b266ff;
+margin-bottom:15px;
+}
+
+#myCode{
+font-size:24px;
+font-weight:bold;
+color:white;
+}
+
+#referralLink{
+background:#1a1a1a;
+border:1px solid #7b2cff;
+border-radius:10px;
+padding:8px;
+margin:10px 0;
+font-size:10px;
+color:white;
+word-break:break-all;
+}
+
+.copy-btn{
+background:#7b2cff;
+color:white;
+border:none;
+border-radius:10px;
+padding:12px 18px;
+margin:5px;
+cursor:pointer;
+font-weight:bold;
+}
+
+/* INCOME */
+
+.income-row{
+display:flex;
+gap:10px;
+margin-top:20px;
+}
+
+.income-box{
+flex:1;
+background:#1a1a1a;
+border-radius:15px;
+padding:15px;
+text-align:center;
+}
+
+.income-box p{
+margin-bottom:10px;
+color:#ccc;
+}
+
+.income-box h4{
+margin:0;
+color:#b266ff;
+font-size:24px;
+}
+
+/* TEAM */
+
+.team-grid{
+display:grid;
+grid-template-columns:repeat(2,1fr);
+gap:12px;
+}
+
+.team-box{
+background:#1a1a1a;
+border-radius:15px;
+padding:15px;
+text-align:center;
+}
+
+.team-box h4{
+margin:0 0 10px;
+color:#b266ff;
+font-size:24px;
+}
+
+.team-box p{
+margin:0;
+color:#ccc;
+font-size:13px;
+}
+
+/* BOTTOM NAV */
+
+.bottom-nav{
+position:fixed;
+bottom:0;
+left:0;
+width:100%;
+background:#111;
+border-top:2px solid #7b2cff;
+display:flex;
+justify-content:space-around;
+padding:12px 0;
+z-index:1000;
+}
+
+.bottom-nav a{
+text-decoration:none;
+color:white;
+text-align:center;
+font-size:14px;
+}
+
+.bottom-nav a:hover{
+color:#b266ff;
+}
+.telegram-btn{
+display:block;
+width:90%;
+margin:20px auto;
+padding:15px;
+text-align:center;
+text-decoration:none;
+background:#229ED9;
+color:white;
+font-size:18px;
+font-weight:bold;
+border-radius:12px;
+box-shadow:0 0 15px rgba(34,158,217,.5);
+}
+
+.telegram-btn:hover{
+transform:scale(1.03);
+}
+.announcement-box{
+
+background:#1e293b;
+
+padding:125px;
+
+border-radius:10px;
+
+margin-bottom:15px;
+
+border-left:5px solid #facc15;
+
+}
+
+.announcement-box h3{
+
+color:#facc15;
+
+margin:0 0 10px 0;
+
+}
+
+#announcementText{
+
+color:white;
+
+font-size:16px;
+
+font-weight:bold;
+
+}
+.announcement-btn{
+
+display:block;
+
+width:90%;
+
+text-align:center;
+
+text-decoration:none;
+
+background:linear-gradient(
+135deg,
+#facc15,
+purple
+);
+
+color:black;
+
+padding:10px;
+
+border-radius:100px;
+
+font-weight:bold;
+
+font-size:16px;
+
+margin-top:12px;
+
+margin-bottom:12px;
+
+box-shadow:
+ 10 10  15px rgba(250,204,21,.5);
+
+transition:.3s;
+
+}
+
+.announcement-btn:hover{
+
+transform:
+translateY(-3px)
+scale(1.02);
+
+box-shadow:
+0 0 25px rgba(250,204,21,.8);
+
+}
+#announcementCount{
+
+background:red;
+
+color:white;
+
+padding:2px 8px;
+
+border-radius:20px;
+
+font-size:12px;
+
+margin-left:5px;
+
+}
+  </style>
+</head>
+<body>
+
+ <a href="announcements.html"
+class="announcement-btn">
+Admin
+📢 Announcements
+<span id="announcementCount">
+(0)
+</span>
+
+</a>
+  <div id="sideMenu" class="side-menu">
+     <div class="menu-top">
+
+<button class="close-btn"
+onclick="closeMenu()">
+❌
+</button>
+
+</div>
+<a href="leaderboard.html">🏆 Leaderboard
+
+</a>
+<a href="deposithistory.html">
+📜 Deposit History
+</a>
+
+<a href="withdrawhistory.html">
+📤 Withdraw History
+</a>
+
+<a href="rewards.html">
+🎁 Rewards
+</a>
+
+<a href="team.html">
+👥 My Team
+</a>
+
+<a href="login.html">
+🚪 Logout
+</a>
+
+</div>
+  <div class="dashboard">  <!-- Header -->  <div class="header"><button class="menu-btn" onclick="openMenu()">
+  ☰
+</button>
+
+<h1>JB POOL</h1>
+
+  </div>  <!-- Side Menu -->  <div id="sideMenu" class="side-menu"><div class="menu-top">
+
+  <button class="close-btn" onclick="closeMenu()">
+    ✖
+  </button>
+
+</div>
+
+<a href="deposithistory.html">
+  📜 Deposit History
+</a>
+
+<a href="withdrawhistory.html">
+  📤 Withdraw History
+</a>
+
+<a href="login.html">
+  🚪 Logout
+</a>
+
+  </div>  <!-- Welcome Card -->  <div class="welcome-card"><h2>
+  Welcome,
+  <span id="username">User</span>
+</h2>
+
+  </div>  <!-- Wallet Card -->  <div class="card"><h3>💰 Wallet Balance</h3>
+
+<div class="balance">
+
+  <span id="balance">0.00</span>
+  USDT
+
+</div>
+
+<!-- Referral Box -->
+
+<div class="referral-box">
+
+  <h3>🎁 My Referral Code</h3>
+
+  <p id="myCode">
+    Loading...
+  </p>
+
+  <p id="referralLink">
+    Loading Link...
+  </p>
+
+  <button onclick="copyCode()" class="copy-btn">
+    📋 Copy Code
+  </button>
+
+  <button onclick="copyLink()" class="copy-btn">
+    🔗 Copy Link
+  </button>
+
+</div>
+
+<!-- Income -->
+
+<div class="income-row">
+
+  <div class="income-box">
+
+    <p>Daily Income</p>
+
+    <h4 id="dailyIncome">
+      0.00
+    </h4>
+
+  </div>
+
+  <div class="income-box">
+
+    <p>Total Income</p>
+
+    <h4 id="totalIncome">
+      0.00
+    </h4>
+
+  </div>
+
+</div>
+
+  </div>  <!-- My Team -->  <div class="card"><h3>👥 My Team</h3>
+
+<div class="team-grid">
+
+  <div class="team-box">
+
+    <h4 id="communityRewards">
+      0
+    </h4>
+
+    <p>Community Rewards</p>
+
+  </div>
+
+  <div class="team-box">
+
+    <h4 id="validMembers">
+      0
+    </h4>
+
+    <p>Valid Members</p>
+
+  </div>
+
+  <div class="team-box">
+
+    <h4 id="aMembers">
+      0
+    </h4>
+
+    <p>A Members</p>
+
+  </div>
+
+  <div class="team-box">
+
+    <h4 id="bcdMembers">
+      0
+    </h4>
+
+    <p>B + C + D Members</p>
+
+  </div>
+
+</div>
+
+  </div></div><!-- Bottom Navigation --><div class="bottom-nav">  <a href="dashboard.html">
+    🏠<br>Home
+  </a>  <a href="deposit.html">
+    💰<br>Deposit
+  </a>  <a href="withdraw.html">
+    💸<br>Withdraw
+    <a href="reward.html">
+🎁<br> Rewards
+</a>
+  </a>  <a href="profile.html">
+    👤<br>Mine
+  </a>
+</div>
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
+
+import {
+getAuth,
+onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/12.15.0/firebase-auth.js";
+
+import {
+getFirestore,
+doc,
+getDoc,
+getDocs,
+collection,
+query,
+where,
+updateDoc
+} from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDqzr44aj7ikUquk4Fp7WeYxwIVFX0-NkI",
+  authDomain: "ib-pool.firebaseapp.com",
+  projectId: "ib-pool",
+  storageBucket: "ib-pool.firebasestorage.app",
+  messagingSenderId: "930921732786",
+  appId: "1:930921732786:web:2eab7b97f307c25ac507ab"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+/* MENU */
+
+window.openMenu = function(){
+document.getElementById("sideMenu").style.display = "block";
+}
+
+window.closeMenu = function(){
+document.getElementById("sideMenu").style.display = "none";
+}
+
+/* COPY CODE */
+
+window.copyCode = function(){
+
+const code =
+document.getElementById("myCode").innerText;
+
+navigator.clipboard.writeText(code);
+
+alert("✅ Referral Code Copied");
+
+}
+
+/* COPY LINK */
+
+window.copyLink = function(){
+
+const link =
+document.getElementById("referralLink").innerText;
+
+navigator.clipboard.writeText(link);
+
+alert("✅ Referral Link Copied");
+
+}
+
+/* LOAD USER DATA */
+onAuthStateChanged(auth, async(user)=>{
+/* ANNOUNCEMENT COUNT */
+if(!user){
+
+window.location.href = "login.html";
+return;
+
+}
+await updateDoc(
+doc(db,"users",user.uid),
+{
+lastSeen: Date.now()
+}
+);
+setInterval(async()=>{
+
+await updateDoc(
+doc(db,"users",user.uid),
+{
+lastSeen: Date.now()
+}
+);
+
+},60000);
+
+const announcementSnap =
+await getDocs(
+collection(db,"announcements")
+);
+
+const totalAnnouncements =
+announcementSnap.size;
+
+const seenAnnouncements =
+Number(
+localStorage.getItem(
+"seenAnnouncements"
+) || 0
+);
+
+const unread =
+totalAnnouncements -
+seenAnnouncements;
+
+document.getElementById(
+"announcementCount"
+).innerText =
+"(" + unread + ")";
+try{
+
+/* USER DATA */
+
+const userDoc =
+await getDoc(
+doc(db,"users",user.uid)
+);
+
+if(!userDoc.exists()){
+
+console.log("User document not found");
+return;
+
+}
+
+const data =
+userDoc.data();
+
+/* USERNAME */
+
+document.getElementById("username").innerText =
+data.username || "User";
+
+/* BALANCE */
+
+document.getElementById("balance").innerText =
+data.balance || 0;
+
+document.getElementById("communityRewards").innerText =
+data.communityRewards || 0;
+
+document.getElementById("totalIncome").innerText =
+data.totalIncome || 0;
+
+/* REFERRAL CODE */
+
+const myCode =
+data.myReferralCode || "";
+
+document.getElementById("myCode").innerText =
+myCode;
+
+/* REFERRAL LINK */
+
+document.getElementById("referralLink").innerText =
+window.location.origin +
+"/signup.html?ref=" +
+myCode;
+
+/* TEAM MEMBERS */
+
+const q = query(
+collection(db,"users"),
+where("referredBy","==",myCode)
+);
+
+const snap =
+await getDocs(q);
+
+if(document.getElementById("validMembers")){
+
+document.getElementById("validMembers").innerText =
+snap.size;
+
+}
+
+/* ANNOUNCEMENT */
+
+const announcementBox =
+document.getElementById("announcementText");
+
+if(announcementBox){
+
+const announcementSnap =
+await getDocs(
+collection(db,"announcements")
+);
+
+if(!announcementSnap.empty){
+
+const docs =
+announcementSnap.docs;
+
+const latest =
+docs[docs.length - 1].data();
+
+announcementBox.innerText =
+latest.message;
+
+}
+
+}
+
+}catch(error){
+
+console.log(error);
+
+}
+
+});
+
+</script>
+<a href="https://t.me/linkbhhhhg"
+target="_blank"
+class="telegram-btn">
+
+📢 Join Telegram
+
+</a>
+</body>
+</html>

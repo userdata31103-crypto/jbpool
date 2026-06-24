@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IB POOL Login</title>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial,sans-serif;
+}
+body{
+background:#0b0b0b;
+color:#fff;
+padding:20px;
+min-height:100vh;
+display:flex;
+justify-content:center;
+align-items:center;
+}
+
+h1{
+text-align:center;
+font-size:42px;
+margin-bottom:40px;
+color:#b266ff;
+text-shadow:0 0 15px #b266ff;
+}
+
+input{
+width:100%;
+padding:15px;
+background:#141414;
+border:2px solid #7b2cff;
+border-radius:15px;
+color:#fff;
+font-size:16px;
+outline:none;
+}
+
+input:focus{
+box-shadow:0 0 15px #7b2cff;
+}
+
+.forgot{
+display:block;
+text-align:right;
+margin-top:10px;
+color:#b266ff;
+text-decoration:none;
+}
+
+.confirm-btn{
+width:100%;
+padding:16px;
+margin-top:25px;
+border:none;
+border-radius:15px;
+font-size:18px;
+font-weight:bold;
+color:#fff;
+background:linear-gradient(45deg,#7b2cff,#b266ff);
+cursor:pointer;
+}
+
+.confirm-btn:hover{
+transform:scale(1.02);
+}
+
+.signup{
+text-align:center;
+margin-top:25px;
+color:#ccc;
+}
+
+.signup a{
+color:#b266ff;
+text-decoration:none;
+font-weight:bold;
+}
+
+label{
+display:block;
+margin-top:15px;
+margin-bottom:8px;
+color:#ddd;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>Welcome Back</h1>
+
+<label>Email*</label>
+<input type="email" id="loginEmail" placeholder="Enter Email">
+
+<label>Password*</label>
+<input type="password" id="loginPassword" placeholder="Enter Password">
+
+
+
+<button class="confirm-btn" id="loginBtn">
+Confirm
+</button>
+
+<div class="signup">
+Don't have an account?
+<a href="signup.html">Sign Up</a>
+</div>
+
+</div>
+
+<script type="module">
+
+import { initializeApp }
+from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
+
+import {
+getAuth,
+signInWithEmailAndPassword
+}
+from "https://www.gstatic.com/firebasejs/12.15.0/firebase-auth.js";
+
+const firebaseConfig = {
+
+apiKey: "AIzaSyDqzr44aj7ikUquk4Fp7WeYxwIVFX0-NkI",
+authDomain: "ib-pool.firebaseapp.com",
+projectId: "ib-pool",
+storageBucket: "ib-pool.firebasestorage.app",
+messagingSenderId: "930921732786",
+appId: "1:930921732786:web:2eab7b97f307c25ac507ab"
+
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
+document.getElementById("loginBtn")
+.addEventListener("click", async()=>{
+
+const email =
+document.getElementById("loginEmail").value;
+
+const password =
+document.getElementById("loginPassword").value;
+
+try{
+
+await signInWithEmailAndPassword(
+auth,
+email,
+password
+);
+
+alert("Login Successful");
+
+window.location.href="dashboard.html";
+
+}catch(error){
+
+alert(error.message);
+
+}
+
+});
+
+</script>
+
+</body>
+</html>

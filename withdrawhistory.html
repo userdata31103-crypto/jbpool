@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Withdraw history</title>
+  <style>
+  body{
+  background:#0a0a0a;
+  color:white;
+  min-height:100vh;
+  padding:15px;
+  overflow-x:hidden;
+  font-family:Arial,sans-serif;
+}
+    .history-container{
+  max-width:600px;
+  margin:20px auto;
+  padding:20px;
+}
+
+.history-container h2{
+  text-align:center;
+  color:#b266ff;
+  margin-bottom:20px;
+}
+
+.history-card{
+  background:#111;
+  border:2px solid #7b2cff;
+  border-radius:15px;
+  padding:15px;
+  margin-bottom:15px;
+  color:white;
+  box-shadow:0 0 10px rgba(123,44,255,0.3);
+}
+
+.history-card p{
+  margin:8px 0;
+}
+
+.pending{
+  color:#ffcc00;
+  font-weight:bold;
+}
+
+.approved{
+  color:#00ff99;
+  font-weight:bold;
+}
+
+.rejected{
+  color:#ff4444;
+  font-weight:bold;
+}
+.back-btn{
+  padding:12px 20px;
+  background:#7b2cff;
+  color:white;
+  border:none;
+  border-radius:10px;
+  font-size:16px;
+  font-weight:bold;
+  margin-bottom:15px;
+  cursor:pointer;
+}
+  </style>
+</head>
+<body>
+  <button class="back-btn" onclick="goDashboard()">
+← Back
+</button>
+
+<script>
+function goDashboard(){
+  window.location.href = "dashboard.html";
+}
+</script>
+  <div class="history-container">
+
+<h2>📤 Withdraw History</h2>
+
+<div id="withdrawHistoryList">
+
+</div>
+
+</div>
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
+
+import {
+  getAuth,
+  onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/12.15.0/firebase-auth.js";
+
+import {
+  getFirestore,
+  collection,
+  query,
+  where,
+  getDocs
+} from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDqzr44aj7ikUquk4Fp7WeYxwIVFX0-NkI",
+  authDomain: "ib-pool.firebaseapp.com",
+  projectId: "ib-pool",
+  storageBucket: "ib-pool.firebasestorage.app",
+  messagingSenderId: "930921732786",
+  appId: "1:930921732786:web:2eab7b97f307c25ac507ab"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+onAuthStateChanged(auth, async(user)=>{
+
+  if(!user){
+    return;
+  }
+
+  const q = query(
+    collection(db,"withdrawals"),
+    where("uid","==",user.uid)
+  );
+
+  const querySnapshot = await getDocs(q);
+
+  const list =
+  document.getElementById("withdrawHistoryList");
+
+  list.innerHTML = "";
+
+  querySnapshot.forEach((doc)=>{
+
+    const data = doc.data();
+
+    list.innerHTML += `
+      <div class="history-card">
+
+        <p><b>Amount:</b> ${data.amount} USDT</p>
+
+        <p><b>Network:</b> ${data.network}</p>
+
+        <p><b>Wallet:</b> ${data.wallet}</p>
+
+        <p>
+          <b>Status:</b>
+          <span class="${data.status.toLowerCase()}">
+            ${data.status}
+          </span>
+        </p>
+
+      </div>
+    `;
+
+  });
+
+});
+
+
+
+</script>
+</body>
+</html>

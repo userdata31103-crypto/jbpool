@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Leaderboard</title>
+
+<style>
+body{
+background:linear-gradient(
+135deg,
+#0f172a,
+#1e293b
+);
+font-family:Arial,sans-serif;
+padding:15px;
+color:white;
+min-height:100vh;
+}
+
+h2{
+text-align:center;
+font-size:32px;
+margin-bottom:25px;
+color:#facc15;
+text-shadow:
+0 0 10px #facc15,
+0 0 20px #facc15;
+animation: glow 2s infinite alternate;
+}
+
+@keyframes glow{
+
+from{
+text-shadow:
+0 0 10px #facc15;
+}
+
+to{
+text-shadow:
+0 0 25px #facc15;
+}
+
+}
+
+.leader-card{
+
+background:
+rgba(255,255,255,.05);
+
+backdrop-filter:
+blur(10px);
+
+border:
+1px solid rgba(255,255,255,.1);
+
+padding:18px;
+
+margin-bottom:15px;
+
+border-radius:18px;
+
+display:flex;
+
+justify-content:space-between;
+
+align-items:center;
+
+box-shadow:
+0 0 15px rgba(124,58,237,.2);
+
+transition:.4s;
+
+animation:
+slideUp .5s ease;
+}
+
+.leader-card:hover{
+
+transform:
+translateY(-5px)
+scale(1.02);
+
+box-shadow:
+0 0 25px rgba(124,58,237,.5);
+
+}
+
+@keyframes slideUp{
+
+from{
+
+opacity:0;
+
+transform:
+translateY(20px);
+
+}
+
+to{
+
+opacity:1;
+
+transform:
+translateY(0);
+
+}
+
+}
+
+.rank{
+
+font-size:28px;
+
+font-weight:bold;
+
+}
+
+.user-info h3{
+
+margin:0;
+
+font-size:20px;
+
+color:#22c55e;
+
+}
+
+.user-info p{
+
+margin-top:5px;
+
+font-size:14px;
+
+color:#cbd5e1;
+
+}
+
+.count{
+
+font-size:26px;
+
+font-weight:bold;
+
+color:#facc15;
+
+}
+
+.first{
+
+background:
+linear-gradient(
+90deg,
+#facc15,
+#FFA500
+);
+
+color:black;
+
+}
+
+.second{
+
+background:
+linear-gradient(
+90deg,
+#e5e7eb,
+#9ca3af
+);
+
+color:black;
+
+}
+
+.third{
+
+background:
+linear-gradient(
+90deg,
+#fb923c,
+#ea580c
+);
+
+color:white;
+
+}
+
+.top-badge{
+
+padding:5px 12px;
+
+border-radius:20px;
+
+font-size:12px;
+
+font-weight:bold;
+
+}
+.hall-of-fame{
+background:linear-gradient(
+135deg,
+#FFD700,
+#FFA500
+);
+padding:25px;
+border-radius:25px;
+text-align:center;
+color:black;
+margin-bottom:25px;
+box-shadow:0 0 30px gold;
+}
+.hall-of-fame h2{
+color:#000000;
+text-shadow:none;
+}
+
+.crown{
+font-size:55px;
+animation:float 2s infinite;
+}
+
+@keyframes float{
+
+0%{
+transform:translateY(0);
+}
+
+50%{
+transform:translateY(-10px);
+}
+
+100%{
+transform:translateY(0);
+}
+
+}
+
+#championName{
+font-size:28px;
+font-weight:bold;
+margin-top:10px;
+}
+
+#championMembers{
+font-size:18px;
+}
+</style>
+
+</head>
+
+<body>
+
+<h2>🏆 LEADER BOARD</h2>
+<div class="hall-of-fame">
+
+<div class="crown">
+👑
+</div>
+
+<h2>Hall of Fame</h2>
+
+<p id="championName">
+Loading...
+</p>
+
+<p id="championMembers">
+Loading...
+</p>
+
+</div>
+
+</div>
+
+<div id="leaderboardList">
+Loading...
+</div>
+<script type='module'>
+  import { initializeApp }
+from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
+
+import {
+getFirestore,
+collection,
+getDocs
+}
+from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
+
+const firebaseConfig = {
+
+apiKey: "AIzaSyDqzr44aj7ikUquk4Fp7WeYxwIVFX0-NkI",
+
+authDomain: "ib-pool.firebaseapp.com",
+
+projectId: "ib-pool",
+
+storageBucket: "ib-pool.firebasestorage.app",
+
+messagingSenderId: "930921732786",
+
+appId: "1:930921732786:web:2eab7b97f307c25ac507ab"
+
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+async function loadLeaderboard(){
+
+try{
+
+const usersSnap =
+await getDocs(
+collection(db,"users")
+);
+
+const allUsers = [];
+
+usersSnap.forEach(docSnap=>{
+
+allUsers.push(docSnap.data());
+
+});
+
+let leaderboard = [];
+
+allUsers.forEach(user=>{
+
+if(!user.myReferralCode) return;
+
+let activeMembers = 0;
+
+allUsers.forEach(member=>{
+
+if(
+member.referredBy === user.myReferralCode &&
+(member.activeDeposit || 0) >= 30
+){
+
+activeMembers++;
+
+}
+
+});
+
+leaderboard.push({
+
+username:
+user.username || "User",
+
+activeMembers
+
+});
+
+});
+
+leaderboard.sort(
+(a,b)=>
+b.activeMembers -
+a.activeMembers
+);
+
+if(leaderboard.length > 0){
+
+document.getElementById(
+"championName"
+).innerText =
+"🥇 " +
+leaderboard[0].username;
+
+document.getElementById(
+"championMembers"
+).innerText =
+leaderboard[0].activeMembers +
+" Active Members";
+
+}
+
+let html = "";
+
+leaderboard
+.filter(user=>user.activeMembers > 0)
+.slice(0,20)
+.forEach((user,index)=>{
+
+let medal = "🏅";
+
+if(index === 0)
+medal = "🥇";
+
+else if(index === 1)
+medal = "🥈";
+
+else if(index === 2)
+medal = "🥉";
+
+let extraClass = "";
+
+if(index === 0)
+extraClass = "first";
+
+else if(index === 1)
+extraClass = "second";
+
+else if(index === 2)
+extraClass = "third";
+
+html += `
+
+<div class="leader-card"><div class="user-info"><div class="rank">
+${medal}
+</div><h3>
+${user.username}
+</h3><p>
+Active Team Members
+</p></div><div><div class="count">
+${user.activeMembers}
+</div><div class="top-badge ${extraClass}">
+Rank #${index+1}
+</div></div></div>`;
+
+});
+
+document.getElementById(
+"leaderboardList"
+).innerHTML =
+html || "No Active Referrers Found";
+
+}catch(error){
+
+console.log(error);
+
+document.getElementById(
+"leaderboardList"
+).innerHTML =
+"Error Loading Leaderboard";
+
+}
+
+}
+
+loadLeaderboard();
+</script>
+</body>
+</html>

@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <style>
+    body{
+background:#0f172a;
+color:white;
+font-family:Arial,sans-serif;
+padding:15px;
+}
+
+.title{
+text-align:center;
+margin-bottom:20px;
+}
+
+.reward-card{
+background:#1e293b;
+padding:15px;
+margin-bottom:12px;
+border-radius:12px;
+border:1px solid #334155;
+}
+
+.reward-card h3{
+color:#22c55e;
+margin-bottom:5px;
+}
+
+.reward-card p{
+margin:0;
+}
+
+.progress-box{
+background:#1e293b;
+padding:20px;
+border-radius:12px;
+margin-top:20px;
+text-align:center;
+}
+
+#rewardProgress{
+font-size:24px;
+font-weight:bold;
+color:#22c55e;
+}
+
+#rewardStatus{
+font-size:18px;
+margin-top:10px;
+}
+.bottom-nav{
+  position:fixed;
+  bottom:0;
+  left:0;
+  width:100%;
+  background:#111;
+  border-top:2px solid #7b2cff;
+  display:flex;
+  justify-content:space-around;
+  padding:12px 0;
+  z-index:1000;
+}
+
+.bottom-nav a{
+  color:white;
+  text-decoration:none;
+  text-align:center;
+  font-size:14px;
+}
+
+.bottom-nav a:hover{
+  color:#b266ff;
+}
+  </style>
+</head>
+<body><h2 class="title">🎁 Reward Plan</h2><div class="reward-card">
+  <h3>10 Direct Active Members</h3>
+  <p>Reward: 50 USDT</p>
+</div><div class="reward-card">
+  <h3>15 Direct Active Members</h3>
+  <p>Reward: 100 USDT</p>
+</div><div class="reward-card">
+  <h3>30 Direct Active Members</h3>
+  <p>Reward: Monthly Salary</p>
+</div><div class="reward-card">
+  <h3>100 Direct Active Members</h3>
+  <p>Reward: 200 USDT</p>
+</div><div class="progress-box">  <h2>📊 My Progress</h2>  <p id="rewardProgress">
+    0 / 10
+  </p>  <p id="rewardStatus">
+    Loading...
+  </p></div><div class="progress-box">  <h3>🏆 Next Target</h3>  <p id="nextTarget">
+    Loading...
+  </p></div><button id="claimBtn" style="display:none;">
+  🎁 Claim Reward
+</button>
+<div class="bottom-nav">
+
+  <a href="dashboard.html">
+    🏠<br>Home
+  </a>
+
+  <a href="deposit.html">
+    💰<br>Deposit
+  </a>
+
+  <a href="withdraw.html">
+    💸<br>Withdraw
+  </a>
+  <a href="reward.html">
+🎁<br> Rewards
+</a>
+
+  <a href="profile.html">
+    👤<br>Mine
+  </a>
+
+</div></body>
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
+
+import {
+getAuth,
+onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/12.15.0/firebase-auth.js";
+
+import {
+getFirestore,
+doc,
+getDoc,
+getDocs,
+collection,
+query,
+where,
+updateDoc,
+increment
+} from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
+
+const firebaseConfig = {
+apiKey: "AIzaSyDqzr44aj7ikUquk4Fp7WeYxwIVFX0-NkI",
+authDomain: "ib-pool.firebaseapp.com",
+projectId: "ib-pool",
+storageBucket: "ib-pool.firebasestorage.app",
+messagingSenderId: "930921732786",
+appId: "1:930921732786:web:2eab7b97f307c25ac507ab"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+onAuthStateChanged(auth, async(user)=>{
+
+if(!user){
+window.location.href = "login.html";
+return;
+}
+
+try{
+
+const userDoc = await getDoc(
+doc(db,"users",user.uid)
+);
+
+if(!userDoc.exists()) return;
+
+const myCode =
+userDoc.data().myReferralCode;
+
+const q = query(
+collection(db,"users"),
+where("referredBy","==",myCode)
+);
+
+const snap =
+await getDocs(q);
+
+let validMembers = 0;
+
+snap.forEach(docSnap=>{
+
+const member =
+docSnap.data();
+
+if(
+(member.activeDeposit || 0) >= 30
+){
+
+validMembers++;
+
+}
+
+});
+const userData = userDoc.data();
+
+let claimReward = 0;
+let rewardField = "";
+
+if(validMembers >= 100 && !userData.reward100Claimed){
+
+claimReward = 200;
+rewardField = "reward100Claimed";
+
+}else if(validMembers >= 30 && !userData.reward30Claimed){
+
+claimReward = 100;
+rewardField = "reward30Claimed";
+
+}else if(validMembers >= 15 && !userData.reward15Claimed){
+
+claimReward = 100;
+rewardField = "reward15Claimed";
+
+}else if(validMembers >= 10 && !userData.reward10Claimed){
+
+claimReward = 50;
+rewardField = "reward10Claimed";
+
+}
+/* REWARD STATUS */
+
+let progress = "";
+let status = "";
+
+if(validMembers >= 100){
+
+progress = validMembers + "/100";
+status = "✅ 200 USDT Reward Unlocked";
+
+}else if(validMembers >= 30){
+
+progress = validMembers + "/30";
+status = "✅ Monthly Salary Unlocked";
+
+}else if(validMembers >= 15){
+
+progress = validMembers + "/15";
+status = "✅ 100 USDT Reward Unlocked";
+
+}else if(validMembers >= 10){
+
+progress = validMembers + "/10";
+status = "✅ 50 USDT Reward Unlocked";
+
+}else{
+
+progress = validMembers + "/10";
+status = "🔒 Reward Locked";
+
+}
+
+document.getElementById("rewardProgress").innerText = progress;
+document.getElementById("rewardStatus").innerText = status;
+if(claimReward > 0){
+
+document.getElementById(
+"claimBtn"
+).style.display = "block";
+
+}
+/* NEXT TARGET */
+
+let nextTarget = "";
+
+if(validMembers < 10){
+
+nextTarget =
+"Need " + (10-validMembers) +
+" more members for 50 USDT";
+
+}else if(validMembers < 15){
+
+nextTarget =
+"Need " + (15-validMembers) +
+" more members for 100 USDT";
+
+}else if(validMembers < 30){
+
+nextTarget =
+"Need " + (30-validMembers) +
+" more members for Monthly Salary";
+
+}else if(validMembers < 100){
+
+nextTarget =
+"Need " + (100-validMembers) +
+" more members for 200 USDT";
+
+}else{
+
+nextTarget =
+"🎉 All Rewards Unlocked";
+
+}
+
+document.getElementById("nextTarget").innerText =
+nextTarget;
+document.getElementById("claimBtn").onclick =
+async function(){
+
+await updateDoc(
+doc(db,"users",user.uid),
+{
+communityRewards:
+increment(claimReward),
+
+totalIncome:
+increment(claimReward),
+
+}
+);
+
+alert("✅ Reward Claimed");
+
+location.reload();
+
+};
+}catch(error){
+
+console.log(error);
+
+}
+
+});
+
+</script>
+</body>
+</html>

@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <style>
+    *{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
+
+body{
+  background:#000;
+  color:white;
+  font-family:Arial,sans-serif;
+  padding:20px;
+  padding-bottom:90px;
+}
+
+.profile-container{
+  max-width:500px;
+  margin:auto;
+  background:#111;
+  border:2px solid #7b2cff;
+  border-radius:25px;
+  padding:25px;
+  box-shadow:0 0 20px rgba(123,44,255,.4);
+}
+
+.profile-container h2{
+  text-align:center;
+  color:#b266ff;
+  margin-bottom:25px;
+}
+
+.profile-container input{
+  width:100%;
+  padding:15px;
+  margin-bottom:15px;
+  background:#1a1a1a;
+  border:2px solid #7b2cff;
+  border-radius:12px;
+  color:white;
+  font-size:16px;
+}
+
+#updateBtn{
+  width:100%;
+  padding:15px;
+  border:none;
+  border-radius:12px;
+  background:linear-gradient(45deg,#7b2cff,#b266ff);
+  color:white;
+  font-size:18px;
+  font-weight:bold;
+  margin-bottom:15px;
+}
+
+#logoutBtn{
+  width:100%;
+  padding:15px;
+  border:none;
+  border-radius:12px;
+  background:#ff4444;
+  color:white;
+  font-size:18px;
+  font-weight:bold;
+}
+
+.bottom-nav{
+  position:fixed;
+  bottom:0;
+  left:0;
+  width:100%;
+  background:#111;
+  border-top:2px solid #7b2cff;
+  display:flex;
+  justify-content:space-around;
+  padding:12px 0;
+}
+
+.bottom-nav a{
+  color:white;
+  text-decoration:none;
+  text-align:center;
+}
+.profile-card{
+background:#111;
+border:2px solid #7b2cff;
+border-radius:20px;
+padding:20px;
+margin-bottom:20px;
+text-align:center;
+box-shadow:0 0 15px rgba(123,44,255,.3);
+}
+
+.avatar{
+font-size:70px;
+margin-bottom:10px;
+}
+
+.btn{
+background:#7b2cff;
+color:white;
+border:none;
+padding:12px 20px;
+border-radius:10px;
+margin:5px;
+font-weight:bold;
+}
+
+.menu-link{
+display:block;
+text-decoration:none;
+color:white;
+background:#1a1a1a;
+padding:15px;
+border-radius:12px;
+margin-top:10px;
+}
+
+#myCode{
+font-size:22px;
+font-weight:bold;
+color:#b266ff;
+}
+
+#referralLink{
+font-size:10px;
+word-break:break-all;
+background:#1a1a1a;
+padding:10px;
+border-radius:10px;
+margin:10px 0;
+}
+  </style>
+</head>
+<body>
+  <div class="profile-container">
+
+  <h2>👤 My Profile</h2>
+
+  <input type="text" id="username" placeholder="Username">
+
+  <input type="text" id="mobile" placeholder="Mobile Number">
+
+  <button id="updateBtn">
+    💾 Save Changes
+  </button>
+
+  <button id="logoutBtn">
+    🚪 Logout
+  </button>
+
+</div>
+
+<div class="bottom-nav">
+
+  <a href="dashboard.html">
+    🏠<br>Home
+  </a>
+
+  <a href="deposit.html">
+    💰<br>Deposit
+  </a>
+
+  <a href="withdraw.html">
+    💸<br>Withdraw
+  </a>
+<a href="reward.html">
+🎁 <br> Reward
+</a>
+  <a href="profile.html">
+    👤<br>Mine
+  </a>
+
+</div>
+<div class="profile-card">  <div class="avatar">
+    👤
+  </div>  <h2 id="username">
+    Loading...
+  </h2>  <p id="email">
+    Loading...
+  </p>  <p id="mobile">
+    Loading...
+  </p></div><div class="profile-card">  <h3>🎁 Referral Information</h3>  <p><b>Referral Code:</b></p>  <p id="myCode">
+    Loading...
+  </p>  <button onclick="copyCode()" class="btn">
+    📋 Copy Code
+  </button>  <p id="referralLink">
+    Loading Link...
+  </p>  <button onclick="copyLink()" class="btn">
+    🔗 Copy Link
+  </button></div><div class="profile-card">  <h3>💰 Account Information</h3>  <p>
+    Wallet Balance:
+    <span id="balance">0</span>
+    USDT
+  </p>  <p>
+    Total Income:
+    <span id="totalIncome">0</span>
+    USDT
+  </p>  <p>
+    Team Income:
+    <span id="teamIncome">0</span>
+    USDT
+  </p></div><div class="profile-card">  <a href="deposithistory.html" class="menu-link">
+    📜 Deposit History
+  </a>  <a href="withdrawhistory.html" class="menu-link">
+    📤 Withdraw History
+  </a>  <a href="login.html" class="menu-link">
+    🚪 Logout
+  </a></div>
+  <script type="module">
+
+import { initializeApp }
+from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
+
+import {
+  getAuth,
+  onAuthStateChanged,
+  signOut
+}
+from "https://www.gstatic.com/firebasejs/12.15.0/firebase-auth.js";
+
+import {
+  getFirestore,
+  doc,
+  getDoc,
+  updateDoc
+}
+from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDqzr44aj7ikUquk4Fp7WeYxwIVFX0-NkI",
+  authDomain: "ib-pool.firebaseapp.com",
+  projectId: "ib-pool",
+  storageBucket: "ib-pool.firebasestorage.app",
+  messagingSenderId: "930921732786",
+  appId: "1:930921732786:web:2eab7b97f307c25ac507ab"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+onAuthStateChanged(auth, async(user)=>{
+
+  if(!user){
+    window.location.href = "login.html";
+    return;
+  }
+
+  const snap =
+  await getDoc(doc(db,"users",user.uid));
+
+  if(snap.exists()){
+
+    const data = snap.data();
+
+    document.getElementById("username").value =
+    data.username || "";
+
+    document.getElementById("mobile").value =
+    data.mobile || "";
+
+  }
+
+});
+
+document.getElementById("updateBtn")
+.addEventListener("click", async()=>{
+
+  const user = auth.currentUser;
+
+  if(!user) return;
+  if(!user) return;
+
+  await updateDoc(
+    doc(db,"users",user.uid),
+    {
+      username:
+      document.getElementById("username").value,
+
+      mobile:
+      document.getElementById("mobile").value
+    }
+  );
+
+  alert("✅ Profile Updated");
+
+});
+
+document.getElementById("logoutBtn")
+.addEventListener("click", async()=>{
+
+  await signOut(auth);
+
+  window.location.href = "login.html";
+
+});
+onAuthStateChanged(auth, async(user)=>{
+
+if(!user){
+window.location.href = "login.html";
+return;
+}
+
+const snap = await getDoc(
+doc(db,"users",user.uid)
+);
+
+if(snap.exists()){
+
+const data = snap.data();
+
+document.getElementById("username").innerText =
+data.username || "User";
+
+document.getElementById("email").innerText =
+data.email || "";
+
+document.getElementById("mobile").innerText =
+data.mobile || "";
+
+document.getElementById("balance").innerText =
+data.balance || 0;
+
+document.getElementById("totalIncome").innerText =
+data.totalIncome || 0;
+
+document.getElementById("teamIncome").innerText =
+data.teamIncome || 0;
+
+document.getElementById("myCode").innerText =
+data.myReferralCode || "";
+
+document.getElementById("referralLink").innerText =
+window.location.origin +
+"/signup.html?ref=" +
+data.myReferralCode;
+
+}
+
+});
+
+window.copyCode = function(){
+
+navigator.clipboard.writeText(
+document.getElementById("myCode").innerText
+);
+
+alert("✅ Code Copied");
+
+}
+
+window.copyLink = function(){
+
+navigator.clipboard.writeText(
+document.getElementById("referralLink").innerText
+);
+
+alert("✅ Link Copied");
+
+}
+
+</script>
+</body>
+</html>

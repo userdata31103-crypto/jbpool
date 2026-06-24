@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Withdraw</title>
+  <style>
+  body{
+  background:#0a0a0a;
+  color:white;
+  min-height:100vh;
+  padding:15px;
+  overflow-x:hidden;
+}
+  *{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
+    .withdraw-container{
+  max-width:500px;
+  margin:20px auto;
+  background:#111;
+  border:2px solid #7b2cff;
+  border-radius:20px;
+  padding:20px;
+}
+
+.withdraw-container h2{
+  text-align:center;
+  color:#b266ff;
+  margin-bottom:20px;
+}
+
+.notice{
+  background:rgba(123,44,255,0.15);
+  border:2px solid #7b2cff;
+  border-radius:15px;
+  padding:15px;
+  margin-bottom:20px;
+  text-align:center;
+  line-height:1.8;
+  color:white;
+  box-shadow:0 0 15px rgba(123,44,255,0.3);
+}
+
+.withdraw-container label{
+  display:block;
+  margin:12px 0 6px;
+}
+
+.withdraw-container input,
+.withdraw-container select{
+  width:100%;
+  padding:14px;
+  background:#1a1a1a;
+  border:2px solid #7b2cff;
+  border-radius:12px;
+  color:white;
+}
+
+#withdrawBtn{
+  width:100%;
+  margin-top:20px;
+  padding:15px;
+  border:none;
+  border-radius:12px;
+  background:linear-gradient(45deg,#7b2cff,#b266ff);
+  color:white;
+  font-size:18px;
+  font-weight:bold;
+}
+.bottom-nav{
+  position:fixed;
+  bottom:0;
+  left:0;
+  width:100%;
+  background:#111;
+  border-top:2px solid #7b2cff;
+  display:flex;
+  justify-content:space-around;
+  padding:12px 0;
+  z-index:1000;
+}
+
+.bottom-nav a{
+  color:white;
+  text-decoration:none;
+  text-align:center;
+  font-size:14px;
+}
+
+.bottom-nav a:hover{
+  color:#b266ff;
+}
+.back-btn{
+  padding:12px 20px;
+  background:#7b2cff;
+  color:white;
+  border:none;
+  border-radius:10px;
+  font-size:16px;
+  font-weight:bold;
+  cursor:pointer;
+  margin-bottom:15px;
+}
+  </style>
+</head>
+<body>
+  <button class="back-btn" onclick="goDashboard()">
+← Back
+</button>
+  <div class="withdraw-container">
+
+<h2>💸 Withdraw Funds</h2>
+
+<div class="notice">
+⚠️ IMPORTANT NOTICE
+
+<br><br>
+
+✅ Minimum Withdrawal: <b>30 USDT</b>
+
+<br><br>
+
+⏳ All withdrawal requests are processed within <b>5 Hours</b>.
+
+<br><br>
+
+💰 Please make sure your wallet address and network are correct before submitting your withdrawal request.
+</div>
+
+<label>Network</label>
+<select id="network">
+  <option value="BEP20">USDT BEP20</option>
+  <option value="TRC20">USDT TRC20</option>
+</select>
+
+<label>Wallet Address</label>
+<input type="text" id="withdrawWallet"
+placeholder="Enter Your Wallet Address">
+
+<label>Amount (USDT)</label>
+<input type="number" id="withdrawAmount"
+placeholder="Enter Amount">
+
+<button id="withdrawBtn">
+Submit Withdrawal
+</button>
+
+</div>
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
+
+import {
+  getAuth,
+  onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/12.15.0/firebase-auth.js";
+
+import {
+getFirestore,
+collection,
+addDoc,
+doc,
+getDoc,
+updateDoc,
+getDocs,
+query,
+where
+} from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDqzr44aj7ikUquk4Fp7WeYxwIVFX0-NkI",
+  authDomain: "ib-pool.firebaseapp.com",
+  projectId: "ib-pool",
+  storageBucket: "ib-pool.firebasestorage.app",
+  messagingSenderId: "930921732786",
+  appId: "1:930921732786:web:2eab7b97f307c25ac507ab"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+let currentUser = null;
+
+onAuthStateChanged(auth, (user) => {
+  if(user){
+    currentUser = user;
+  }
+});
+
+document.getElementById("withdrawBtn")
+.addEventListener("click", async () => {
+
+  const amount =
+    Number(document.getElementById("withdrawAmount").value);
+
+  const wallet =
+    document.getElementById("withdrawWallet").value.trim();
+
+  const network =
+    document.getElementById("network").value;
+
+  if(amount < 30){
+    alert("Minimum Withdrawal is 30 USDT");
+    return;
+  }
+
+  if(!wallet){
+    alert("Enter Wallet Address");
+    return;
+  }
+
+  if(!currentUser){
+    alert("Please login first");
+    return;
+  }
+  
+const userRef =
+doc(db,"users",currentUser.uid);
+
+const userSnap =
+await getDoc(userRef);
+
+const userData =
+userSnap.data();
+
+const balance =
+Number(userData.balance || 0);
+
+if(amount > balance){
+
+alert("❌ Insufficient Balance");
+
+return;
+
+}
+
+await updateDoc(
+userRef,
+{
+balance: balance - amount
+}
+);
+const pendingQuery = query(
+collection(db,"withdrawals"),
+where("uid","==",currentUser.uid),
+where("status","==","Pending")
+);
+
+const pendingSnap =
+await getDocs(pendingQuery);
+
+if(!pendingSnap.empty){
+
+alert(
+"❌ You already have a pending withdrawal request"
+);
+
+return;
+
+}
+  try{
+
+    await addDoc(
+      collection(db,"withdrawals"),
+      {
+        uid: currentUser.uid,
+        amount: amount,
+        wallet: wallet,
+        network: network,
+        status: "Pending",
+        createdAt: new Date().toISOString()
+      }
+    );
+
+    alert("✅ Withdrawal Request Submitted Successfully");
+
+    document.getElementById("withdrawAmount").value = "";
+    document.getElementById("withdrawWallet").value = "";
+
+  }catch(error){
+
+    alert(error.message);
+    console.error(error);
+
+  }
+
+});
+
+</script>
+  <div class="bottom-nav">
+
+  <a href="dashboard.html">
+    🏠<br>Home
+  </a>
+
+  <a href="deposit.html">
+    💰<br>Deposit
+  </a>
+
+  <a href="withdraw.html">
+    💸<br>Withdraw
+  </a>
+<a href="reward.html">
+🎁<br> Rewards
+</a>
+  <a href="profile.html">
+    👤<br>Mine
+  </a>
+
+</div>
+<script>
+function goDashboard(){
+  window.location.href = "dashboard.html";
+}
+</script>
+</body>
+</html>

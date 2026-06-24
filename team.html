@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <style>
+    body{
+background:#0f172a;
+font-family:Arial,sans-serif;
+padding:15px;
+color:white;
+}
+
+h2{
+text-align:center;
+margin-bottom:20px;
+color:#22c55e;
+}
+
+#teamList{
+display:flex;
+flex-direction:column;
+gap:12px;
+}
+
+.team-member{
+background:#1e293b;
+border:1px solid #334155;
+border-radius:15px;
+padding:15px;
+box-shadow:0 4px 10px rgba(0,0,0,0.3);
+transition:0.3s;
+}
+
+.team-member:hover{
+transform:translateY(-3px);
+}
+
+.team-member h3{
+margin:0 0 10px;
+font-size:18px;
+color:#22c55e;
+}
+
+.team-member p{
+margin:5px 0;
+font-size:14px;
+color:#cbd5e1;
+}
+
+.active{
+color:#22c55e;
+font-weight:bold;
+}
+
+.inactive{
+color:#ef4444;
+font-weight:bold;
+}
+
+.loading{
+text-align:center;
+padding:20px;
+font-size:16px;
+color:#94a3b8;
+}
+
+.back-btn{
+display:block;
+width:100%;
+padding:12px;
+margin-bottom:20px ;
+border:none;
+border-radius:12px;
+background:#22c55e;
+color:white;
+font-size:16px;
+font-weight:bold;
+cursor:pointer;
+}
+
+.back-btn:hover{
+opacity:0.9;
+}
+.bottom-nav{
+  position:fixed;
+  bottom:0;
+  left:0;
+  width:100%;
+  background:#111;
+  border-top:2px solid #7b2cff;
+  display:flex;
+  justify-content:space-around;
+  padding:12px 0;
+  z-index:1000;
+}
+
+.bottom-nav a{
+  color:white;
+  text-decoration:none;
+  text-align:center;
+  font-size:14px;
+}
+
+.bottom-nav a:hover{
+  color:#b266ff;
+}
+  </style>
+</head>
+<body>
+  <button class="back-btn"
+onclick="window.location.href='dashboard.html'">
+⬅ Back To Dashboard
+</button>
+  <h2>👥 My Team</h2>
+
+<div id="teamList">
+<div class="loading">Loading Team...</div>
+</div>
+
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
+
+import {
+getAuth,
+onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/12.15.0/firebase-auth.js";
+
+import {
+getFirestore,
+doc,
+getDoc,
+getDocs,
+collection,
+query,
+where
+} from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
+
+const firebaseConfig = {
+apiKey: "AIzaSyDqzr44aj7ikUquk4Fp7WeYxwIVFX0-NkI",
+authDomain: "ib-pool.firebaseapp.com",
+projectId: "ib-pool",
+storageBucket: "ib-pool.firebasestorage.app",
+messagingSenderId: "930921732786",
+appId: "1:930921732786:web:2eab7b97f307c25ac507ab"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+onAuthStateChanged(auth, async(user)=>{
+
+if(!user){
+window.location.href = "login.html";
+return;
+}
+
+const userDoc =
+await getDoc(
+doc(db,"users",user.uid)
+);
+
+if(!userDoc.exists()) return;
+
+const myCode =
+userDoc.data().myReferralCode;
+
+const q = query(
+collection(db,"users"),
+where("referredBy","==",myCode)
+);
+
+const snap =
+await getDocs(q);
+
+let html = "";
+
+snap.forEach(docSnap=>{
+
+const member =
+docSnap.data();
+
+html += `
+
+<div class="team-member"><h3>
+${member.username || "User"}
+</h3><p>
+Deposit:
+${member.activeDeposit || 0} USDT
+</p><p>
+Status:
+${(member.activeDeposit || 0) >= 30
+? "Active ✅"
+: "Inactive ❌"}
+</p></div>`;
+
+});
+
+document.getElementById(
+"teamList"
+).innerHTML = html;
+
+});
+</script>
+<div class="bottom-nav">
+
+  <a href="dashboard.html">
+    🏠<br>Home
+  </a>
+
+  <a href="deposit.html">
+    💰<br>Deposit
+  </a>
+
+  <a href="withdraw.html">
+    💸<br>Withdraw
+  </a>
+
+  <a href="profile.html.html">
+    👤<br>Mine
+  </a>
+
+</div>
+</body>
+</html>
