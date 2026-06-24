@@ -204,7 +204,16 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
+window.onload = () => {
 
+const urlParams = new URLSearchParams(window.location.search);
+const refCode = urlParams.get("ref");
+
+if(refCode){
+document.getElementById("referralCode").value = refCode;
+}
+
+};
 document.querySelector(".signup-btn").addEventListener("click", async () => {
 
   const username = document.getElementById("username").value.trim();
